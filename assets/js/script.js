@@ -3,6 +3,7 @@ let tasksToDoEL = document.querySelector("#tasks-to-do");
 let pageContentEl = document.querySelector("#page-content");
 let tasksInProgressEl = document.querySelector("#tasks-in-progress");
 let tasksCompleteEl = document.querySelector("#tasks-completed");
+const tasks = [];
 let taskIdCounter = 0;
 
 var taskFormHandler = function(event) {
@@ -23,7 +24,8 @@ var taskFormHandler = function(event) {
     } else {
         let taskDataObj = {
             name: taskNameInput,
-            type: taskTypeInput
+            type: taskTypeInput,
+            status: "to do"
         };
         createTaskEl(taskDataObj);
     }
@@ -37,6 +39,12 @@ let completeEditTask = function(taskName, taskType, taskId) {
     console.log(taskSelected);
     taskSelected.querySelector("h3.task-name").textContent = taskName;
     taskSelected.querySelector("span.task-type").textContent = taskType;
+    for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].id === parseInt(taskId)) {
+            tasks[i].name = taskName;
+            tasks[i].type = taskType;
+        }
+    };
 
     alert("Task Updated");
     formEL.removeAttribute("data-task-id");
@@ -58,7 +66,8 @@ var createTaskEl = function (taskDataObj) {
     listItemEl.appendChild(taskActionsEl);
 
     tasksToDoEL.appendChild(listItemEl);
-
+    taskDataObj.id = taskIdCounter;
+    tasks.push(taskDataObj);
     taskIdCounter++;
 };
 
@@ -102,6 +111,15 @@ var createTaskActions = function (taskID) {
 var deleteTask = function(taskId) {
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId +"']");
     taskSelected.remove();
+
+    let updatedTaskArr = [];
+    for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].id !== parseInt(taskId)){
+            updatedTaskArr.push(tasks[i]);
+        }
+    }
+
+    tasks = updatedTaskArr;
 };
 
 var editTask = function(taskId) {
@@ -144,6 +162,11 @@ let taskStatusChangeHandler = function(event) {
     }
     else if (statusValue === "completed") {
         tasksCompleteEl.appendChild(taskSelected);
+    }
+    for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].id === parseInt(taskId)) {
+            tasks[i].status = statusValue;
+        }
     }
 };
 
